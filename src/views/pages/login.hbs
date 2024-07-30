@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOST</title>
+    <style>
+        body {
+            background-color: #F4F4F6; /* Light gray background */
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            justify-content: center;
+            align-items: center;
+            color: #333; /* Dark text */
+        }
+        header {
+            background-color: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header img {
+            max-width: 150px;
+            height: auto;
+        }
+        .card {
+            background-color: #FFFFFF; /* White card */
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 320px;
+            color: #2A4365; /* Ghost left side */
+            text-align: center;
+        }
+        .card legend {
+            color: #2A4365; /* Ghost left side */
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .card input[type="username"],
+        .card input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #CCC;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .card button {
+            background-color: #2A4365; /* Ghost left side */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .card button:hover {
+            background-color: #6799D1; /* Ghost right side */
+        }
+        .card a {
+            color: #2A4365; /* Ghost left side */
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .card a:hover {
+            text-decoration: underline;
+        }
+        .card .form-text {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <form action="/login" method="POST">
+            <div class="mb-3">
+                <img src="../../img/ghost_logo.png" alt="Logo" width="150px">
+            </div>
+            <legend><b>Login</b></legend>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="username" name="username" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit">Login</button>
+            <div class="form-text">Don't have an account? <a href="/register">Register</a></div>
+        </form>
+    </div>
+</body>
+</html>
+

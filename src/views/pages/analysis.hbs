@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #F0F0F0; /* Light gray background */
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333; /* Dark text */
+        }
+        .navbar {
+            background-color: #2A4365; /* Dark blue */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar a:hover {
+            background-color: #1A365D; /* Darker blue on hover */
+        }
+        .content {
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #FFFFFF; /* White card */
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+            color: #2A4365; /* Dark blue text */
+            text-align: center;
+        }
+        .card-header {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .card-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .stock-item {
+            width: 100%; /* Takes full width initially */
+            min-width: 300px; /* Minimum width to avoid collapsing */
+            background-color: #f0f0f0; /* Light gray background for stock item */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .stock-item h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: 2A4365; /* Dark blue */
+        }
+        .stock-item p {
+            margin-bottom: 10px;
+            color: #555; /* Dark gray */
+        }
+        .metabase-embed {
+            width: 100%;
+            height: 100%; /* Fixed height for Metabase visuals */
+            border: none; /* Remove border for iframe */
+            overflow: hidden; /* Hide overflow */
+            border-radius: 10px;
+        }
+        @media (min-width: 600px) {
+            .content {
+                justify-content: space-between;
+            }
+            .stock-item {
+                width: calc(50% - 20px); /* Two items per row with gap */
+            }
+            .metabase-embed-table {
+                height: 700px; /* Adjusted height for table visuals */
+                width: 600px; /* Adjusted width for table visuals */
+            }
+            .metabase-embed-map {
+                height: 500px; /* Adjusted height for map visuals */
+                width: 600px; /* Adjusted width for map visuals */
+            }
+        }
+    </style>
+</head>
+<body>
+    {{> nav}}
+
+    <div class="content">
+        <div class="card">
+            <h2>ID Overview</h2>
+            <iframe
+                src="http://localhost:3000/public/dashboard/f4aef8f8-a017-49d2-950e-34751b170bb8"
+                frameborder="0"
+                width="1000"
+                height="1000"
+                allowtransparency
+            ></iframe>
+            <!--
+            <div class="card-body">
+                <div class="stock-item">
+                    <h2>Pool of IDs</h2>
+                    <p></p>
+                    <iframe class="metabase-embed metabase-embed-table"
+                            src="http://localhost:3000/public/question/84130321-5ebd-49bc-9ee4-0fb97c5a98dd"
+                            width="400"
+                            height="600"
+                            frameborder="0"
+                            allowtransparency
+                    ></iframe>
+                    
+                </div>
+                <div class="stock-item">
+                    <h2>Location</h2>
+                    <p></p>
+                    <iframe class="metabase-embed metabase-embed-map"
+                        src="http://localhost:3000/public/question/39706d5b-251a-42d4-ab75-3cb87190577d"
+                        frameborder="0"
+                        width="600"
+                        height="400"
+                        allowtransparency
+                    ></iframe>
+                </div>
+                <div class="stock-item">
+                    <h2>Other details</h2>
+                    <p></p>
+                    <div class="chart">Chart</div>
+                </div>
+                <div class="stock-item">
+                    <h2>Other details</h2>
+                    <p></p>
+                    <div class="chart">Chart</div>
+                </div>
+            </div>
+            -->
+        </div>
+
+        <!--
+        <div class="card">
+            <div class="card-header">Persona Overview</div>
+            <div class="card-body">
+                <div class="stock-item">
+                    <h2>Personas</h2>
+                    <p></p>
+                    <iframe class="metabase-embed metabase-embed-table"
+                        src="http://localhost:3000/public/question/198127f2-e640-4b53-b813-92d90187b345"
+                        frameborder="0"
+                        allowtransparency
+                    ></iframe>
+                </div>
+                <div class="stock-item"
+                    <h2>Example</h2>
+                    <p></p>
+                    <iframe class="metabase-embed metabase-embed-table"
+                        src="http://localhost:3000/public/question/2488add5-9a2f-48a2-abf1-c2dd84169203"
+                        frameborder="0"
+                        allowtransparency
+                    ></iframe> 
+                </div>
+                <div class="stock-item">
+                    <h2>Other details</h2>
+                    <p></p>
+                    <div class="chart">Chart</div>
+                </div>
+                <div class="stock-item">
+                    <h2>Other details</h2>
+                    <p></p>
+                    <div class="chart">Chart</div>
+                </div>
+            </div>
+        </div>
+        -->
+    </div>
+</body>
+</html>
+
+

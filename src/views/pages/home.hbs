@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            background-color: #F4F4F6; /* Light gray background */
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333; /* Dark text */
+        }
+        .navbar {
+            background-color: #2A4365; /* Dark blue */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar a:hover {
+            background-color: #1A365D; /* Darker blue on hover */
+        }
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 60px); /* Adjusted for the navbar height */
+            text-align: center;
+        }
+        .card {
+            background-color: #FFFFFF; /* White card */
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 320px;
+            color: #2A4365; /* Ghost left side */
+        }
+        .card h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .card p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    {{> nav}}
+    <div class="content">
+        <div class="card">
+            <h1>Welcome to the Home Page</h1>
+            <p>This is the home page of the application. I don't know what to put here for right now :). Use the navigation bar to access different sections.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Persona</title>
+    <style>
+        .persona-item, .saved-persona-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .persona-name {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .details-container {
+            display: none; /* Hide details by default */
+            margin-top: 10px;
+        }
+
+        .remove-btn {
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+            align-self: flex-end;
+        }
+
+        .device-section, .persona-form {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .persona-form {
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .add-device-button, .add-schedule-button, .add-button, .save-personas-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    {{> nav}}
+    <div class="container">
+        <div class="form-container">
+            <h2>Add Persona</h2>
+            <form id="personaForm">
+                <div class="form-group">
+                    <label for="personaName">Name:</label>
+                    <input type="text" id="personaName" name="personaName" required>
+                </div>
+                <div class="form-group">
+                    <label for="personaSIM">SIM:</label>
+                    <input type="text" id="personaSIM" name="personaSIM" required>
+                </div>
+                <div class="form-group">
+                    <label for="personaIMEI">IMEI:</label>
+                    <input type="text" id="personaIMEI" name="personaIMEI" required>
+                </div>
+                <div class="form-group">
+                    <label for="activityProfile">Individual Activity Profile:</label>
+                    <select id="activityProfile" name="activityProfile" required>
+                    </select>
+                </div>
+                <button type="button" class="add-button" onclick="addPersona()">Add</button>
+                <button type="button" class="save-personas-button" onclick="savePersonas()">Save Personas</button>
+            </form>
+
+            <div class="saved-profiles">
+                <div class="saved-profiles-title">Saved Profiles:</div>
+                <div id="savedProfiles">
+                </div>
+            </div>
+        </div>
+
+        <div class="shopping-cart">
+            <div class="shopping-cart-title">Selected Personas:</div>
+            <div id="cartItems">
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Mission Plan</h2>
+        <div><strong>Plan ID:</strong> <span id="planId"></span></div>
+        <button type="button" class="add-device-button" onclick="addDevice()">+ Add Device</button>
+        <div id="deviceSections"></div>
+        <button type="button" class="add-schedule-button" onclick="generatePlan()">Generate Plan</button>
+    </div>
+
+    <script>
+        let username = '';
+        const personas = [];
+        const savedPersonas = [];
+        const devices = [];
+        const scheduleItems = [];
+
+        fetch('/username')
+             .then(response => response.json())
+             .then(data => username = data.username)
+             .catch(error => console.error('Error fetching username:', error));
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function addPersona() {
+            const form = document.getElementById('personaForm');
+            const personaName = form.elements['personaName'].value;
+            const personaSIM = form.elements['personaSIM'].value;
+            const personaIMEI = form.elements['personaIMEI'].value;
+            const activityProfile = form.elements['activityProfile'].value;
+
+            const persona = {
+                name: personaName,
+                sim: personaSIM,
+                imei: personaIMEI,
+                activity: activityProfile
+            };
+
+            if (!personas.find(p => p.name === persona.name)) {
+                personas.push(persona);
+                addToCart(persona);
+            }
+
+            if (!savedPersonas.find(p => p.name === persona.name)) {
+                savedPersonas.push(persona);
+                addToSavedProfiles(persona);
+            }
+
+            form.reset();
+        }
+
+        function addToCart(persona) {
+            const personaList = document.getElementById('cartItems');
+            const personaItem = document.createElement('div');
+            personaItem.classList.add('persona-item');
+            personaItem.innerHTML = `
+                <div class="persona-name" onclick="togglePersonaDetails('${persona.name}')">${persona.name}</div>
+                <div class="remove-btn" onclick="removePersona('${persona.name}')">X</div>
+                <div id="details-${persona.name}" class="details-container">
+                    <p><strong>SIM:</strong> ${persona.sim}</p>
+                    <p><strong>IMEI:</strong> ${persona.imei}</p>
+                    <p><strong>Individual Activity Profile:</strong> ${persona.activity}</p>
+                </div>
+            `;
+            personaList.appendChild(personaItem);
+        }
+
+        function addToSavedProfiles(persona) {
+            const savedProfilesList = document.getElementById('savedProfiles');
+            const savedPersonaItem = document.createElement('div');
+            savedPersonaItem.classList.add('saved-persona-item');
+            savedPersonaItem.innerHTML = `
+                <div class="saved-persona-name" onclick="addSavedPersonaToCart('${persona.name}')">${persona.name}</div>
+                <div class="remove-btn" onclick="removeSavedPersona('${persona.name}')">X</div>
+            `;
+            savedProfilesList.appendChild(savedPersonaItem);
+        }
+
+        function togglePersonaDetails(name) {
+            const detailsContainer = document.getElementById(`details-${name}`);
+            if (detailsContainer.style.display === 'none' || detailsContainer.style.display === '') {
+                detailsContainer.style.display = 'block';
+            } else {
+                detailsContainer.style.display = 'none';
+            }
+        }
+
+        function removePersona(name) {
+            const index = personas.findIndex(persona => persona.name === name);
+            if (index !== -1) {
+                personas.splice(index, 1);
+            }
+
+            const personaItems = document.querySelectorAll('.persona-item');
+            personaItems.forEach(item => {
+                if (item.querySelector('.persona-name').textContent === name) {
+                    item.remove();
+                }
+            });
+
+            const detailsContainer = document.getElementById(`details-${name}`);
+            if (detailsContainer) {
+                detailsContainer.remove();
+            }
+        }
+
+        function removeSavedPersona(name) {
+            const index = savedPersonas.findIndex(persona => persona.name === name);
+            if (index !== -1) {
+                savedPersonas.splice(index, 1);
+            }
+
+            const savedPersonaItems = document.querySelectorAll('.saved-persona-item');
+            savedPersonaItems.forEach(item => {
+                if (item.querySelector('.saved-persona-name').textContent === name) {
+                    item.remove();
+                }
+            });
+        }
+
+        function addSavedPersonaToCart(name) {
+            const persona = savedPersonas.find(p => p.name === name);
+            if (!personas.find(p => p.name === name)) {
+                personas.push(persona);
+                addToCart(persona);
+            }
+        }
+
+        async function savePersonas() {
+
+            const personasToSave = personas.map(persona => {
+                const personaId = generateUUID();
+                return {
+                    personaId: personaId,
+                    personaName: persona.name,
+                    assignedIMEI: persona.imei,
+                    assignedSimCardId: persona.sim,
+                    assignedIndivActivityProfile: persona.activity,
+                    metadata: {
+                        createBy: username,
+                        created: new Date().toISOString(),
+                        modifiedBy: "NA",
+                        modified: new Date().toISOString()
+                    }
+                };
+            });
+
+            try {
+                const response = await fetch('/save-personas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(personasToSave)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+                showAlert(personas.map(persona => persona.name));
+            } catch (error) {
+                console.error('Error saving personas:', error);
+            }
+        }
+
+        function showAlert(personaNames) {
+            const message = `Personas saved successfully:\n\n${personaNames.map(name => `• ${name}`).join('\n')}`;
+            alert(message);
+        }
+
+        async function fetchActivityProfiles() {
+            try {
+                const response = await fetch('/activity-profiles');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const profiles = await response.json();
+                const profileSelect = document.getElementById('activityProfile');
+                
+                profiles.forEach(profile => {
+                    const option = document.createElement('option');
+                    option.value = profile.name;
+                    option.textContent = profile.name;
+                    profileSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching activity profiles:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchActivityProfiles();
+        });
+
+        // SCHEDULER
+
+        let planId = generateUUID();
+        document.getElementById('planId').textContent = planId;
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function addDevice() {
+            const deviceId = generateUUID();
+            const deviceSection = document.createElement('div');
+            deviceSection.classList.add('device-section');
+            deviceSection.innerHTML = `
+                <div><strong>Device ID:</strong> ${deviceId}</div>
+                <button type="button" onclick="addPersonaForm('${deviceId}')">+ Add Persona</button>
+                <div id="personas-${deviceId}"></div>
+            `;
+            document.getElementById('deviceSections').appendChild(deviceSection);
+        }
+
+        function addPersonaForm(deviceId) {
+            const personaForm = document.createElement('div');
+            personaForm.classList.add('persona-form');
+            personaForm.innerHTML = `
+                <div class="form-group">
+                    <label for="persona-${deviceId}">Persona:</label>
+                    <select id="persona-${deviceId}" name="persona">
+                        <!-- Options will be populated here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="startTime-${deviceId}">Start Time:</label>
+                    <input type="datetime-local" id="startTime-${deviceId}" name="startTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="endTime-${deviceId}">End Time:</label>
+                    <input type="datetime-local" id="endTime-${deviceId}" name="endTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="jitter-${deviceId}">Jitter:</label>
+                    <input type="number" id="jitter-${deviceId}" name="jitter" required>
+                </div>
+            `;
+            document.getElementById(`personas-${deviceId}`).appendChild(personaForm);
+            populatePersonaDropdown(deviceId);
+        }
+
+        async function populatePersonaDropdown(deviceId) {
+            try {
+                const response = await fetch('/get-personas');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const personaFiles = await response.json();
+                const personaSelect = document.getElementById(`persona-${deviceId}`);
+                
+                // Clear existing options
+                personaSelect.innerHTML = '';
+
+                personaFiles.forEach(file => {
+                    const option = document.createElement('option');
+                    option.value = file;
+                    option.textContent = file;
+                    personaSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching persona files:', error);
+            }
+        }
+
+        async function generatePlan() {
+            const devices = document.querySelectorAll('.device-section');
+            const planID = document.getElementById('planId').textContent;
+            const requiredPersonas = {};
+            const schedule = [];
+
+            devices.forEach(device => {
+                const personaForms = device.querySelectorAll('.persona-form');
+                
+                personaForms.forEach(form => {
+                    const personaSelect = form.querySelector('select');
+                    const startTime = form.querySelector('input[name="startTime"]').value;
+                    const endTime = form.querySelector('input[name="endTime"]').value;
+                    const jitter = form.querySelector('input[name="jitter"]').value;
+
+                    const personaName = personaSelect.options[personaSelect.selectedIndex].text;
+                    const personaId = personas.find(p => p.name === personaName)?.id;
+
+                    if (personaId) {
+                        requiredPersonas[personaName] = personaId;
+                    } else {
+                        console.warn(`ID for persona ${personaName} not found`);
+                    }
+
+                    schedule.push({
+                        Persona: personaName,
+                        StartTime: startTime,
+                        EndTime: endTime,
+                        Jitter: jitter
+                    });
+                });
+            });
+
+            const planData = {
+                PlanID: planID,
+                RequiredPersonas: requiredPersonas,
+                Schedule: schedule
+            };
+
+            try {
+                const response = await fetch('/save-plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(planData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+                alert('Plan generated and saved successfully!');
+            } catch (error) {
+                console.error('Error saving plan:', error);
+            }
+        }
+
+    </script>
+</body>
+</html>

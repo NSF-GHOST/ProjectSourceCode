@@ -1,0 +1,84 @@
+<!-- nav.hbs -->
+<div class="navbar">
+    <div class="hamburger">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+    <div class="logo">
+        <img src="../../img/ghost_icon.ico" alt="Logo">
+        <a href="/home">Home</a>
+        <a href="/mission">Mission</a>
+        <a href="/analysis">Analysis</a>
+    </div>
+    <div class="nav-links" id="nav-links">
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<style>
+    .navbar {
+            background-color: #2A4365; /* Dark blue */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+    .navbar a:hover {
+        background-color: #1A365D; /* Darker blue on hover */
+    }
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+    }
+    .hamburger .bar {
+        width: 25px;
+        height: 3px;
+        background-color: white;
+        margin: 4px 0;
+        transition: 0.4s;
+    }
+    .nav-links {
+        display: flex;
+        gap: 10px;
+    }
+    @media (max-width: 768px) {
+        .hamburger {
+            display: flex;
+        }
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background-color: #2B388F; /* Ghost left side */
+            width: 100%;
+            text-align: right;
+        }
+        .nav-links a {
+            padding: 15px 20px;
+            border-top: 1px solid #6799D1; /* Ghost right side */
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const hamburger = document.querySelector(".hamburger");
+        const navLinks = document.getElementById("nav-links");
+
+        hamburger.addEventListener("click", () => {
+            navLinks.classList.toggle("open");
+        });
+    });
+</script>

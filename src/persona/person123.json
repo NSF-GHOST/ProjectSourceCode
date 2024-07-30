@@ -1,0 +1,13 @@
+{
+  "personaId": "878e1627-f36f-4bf7-8292-e056a7c67620",
+  "personaName": "person123",
+  "assignedIMEI": "9107234",
+  "assignedSimCardId": "108937453",
+  "assignedIndivActivityProfile": "deception_officer",
+  "metadata": {
+    "createBy": "user123",
+    "created": "2024-07-30T19:23:42.455Z",
+    "modifiedBy": "NA",
+    "modified": "2024-07-30T19:23:42.455Z"
+  }
+}

@@ -1,0 +1,258 @@
+{
+    "Name": "Deception Officer",
+    "Version": "0.0.1",
+    "ProfileID": "fd3a5871-6e8d-433c-a4fb-65bd8296c869",
+
+
+    "AvailableTrafficGroups": [
+		{
+			"Group": "Entertainment",
+			"Instructions": [
+				{"Group": "WebDriver.Youtube", "Duration": "00:00:00"},
+            	{"Group": "AppDriver.Spotify", "Duration": "00:00:00"}
+			]
+		}, 
+		{
+			"Group": "Social",
+			"Instructions": [
+        	    {"Group": "AppDriver.Instagram", "Duration": "00:00:00"},
+        	    {"Group": "AppDriver.Facebook", "Duration": "00:00:00"},
+        	    {"Group": "AppDriver.Signal", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Productivity & Finance",
+			"Instructions": [
+        	    {"Group": "WebDriver.Outlook", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.USAA", "Duration": "00:00:00"},
+        	    {"Group": "AppDriver.MicrosoftAuthenticator", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Education",
+			"Instructions": [
+            	{"Group": "AppDriver.Duolingo", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Creativity",
+			"Instructions": [
+            	{"Group": "AppDriver.Photos", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Health & Fitness",
+			"Instructions": [
+            	{"Group": "AppDriver.Health", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Information & Reading",
+			"Instructions": [
+        	    {"Group": "AppDriver.News", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.CNN", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.MSN", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.Fox", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.MSNBC", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Shopping & Food",
+			"Instructions": [
+            	{"Group": "AppDriver.Amazon", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Travel",
+			"Instructions": [
+            	{"Group": "AppDriver.HotelTrivago", "Duration": "00:00:00"},
+            	{"Group": "AppDriver.AirBnB", "Duration": "00:00:00"}
+        	]
+		}
+	],
+
+
+    "TransitionConditions": [
+		{
+			"Name": "LateNight",
+			"Conditions": [
+				"LocalTime() > 22:00:00"
+			]
+		},
+		{
+			"Name": "Day 2 Patrol 1",
+			"Conditions": [
+				"OperationTime() > StartTime() + 24:00:00",
+				"OperationTime() < StartTime() + 36:00:00",
+				"LocalTime() > 08:00:00",
+				"LocalTime() < 09:00:00"
+			]
+		},
+		{
+			"Name": "Day 2 Patrol 2",
+			"Conditions": [
+				"OperationTime() > StartTime() + 36:00:00",
+				"OperationTime() < StartTime() + 48:00:00",
+				"LocalTime() > 13:40:00",
+				"LocalTime() < 14:40:00"
+			]
+		},
+		{
+			"Name": "Day 3 Leave",
+			"Conditions": [
+				"OperationTime() > StartTime() + 72:00:00",
+				"LocalTime() > 18:40:00"
+			]
+		}
+	],
+
+
+
+
+
+
+
+    "Schedule": [
+        {
+            "Name": "Wake Up",
+            "Duration": "01:00:00",
+            "Jitter": "00:12:00",
+            "TransitionDelay": "00:00:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Setup Forwards Operations",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+				{"Group": "WebDriver.News","Weight": 0.7}, 
+				{"Group": "WebDriver.Socials","Weight": 0.4}, 
+				{"Group": "WebDriver.Communications","Weight": 0.2},
+                {"Group": "Default.Quiet","Weight": 0.5}
+			]
+        },
+        {
+            "Name": "Setup Forwards Operations",
+            "Duration": "01:00:00",
+            "Jitter": "00:15:00",
+            "TransitionDelay": "00:05:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Shift 1",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+                {"Group": "Default.Quiet","Weight": 1.0}
+			]
+        },
+        {
+            "Name": "Shift 1",
+            "Duration": "04:30:00",
+            "Jitter": "00:02:00",
+            "TransitionDelay": "00:15:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Downtime 1",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+                {"Group": "Default.Quiet","Weight": 1.0},
+                {"Group": "AppDriver.Facebook","Weight": 0.2}
+			]
+        },
+        {
+            "Name": "Downtime 1",
+            "Duration": "02:30:00",
+            "Jitter": "00:02:00",
+            "TransitionDelay": "00:15:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Shift 2",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+				{"Group": "WebDriver.News","Weight": 0.7}, 
+				{"Group": "WebDriver.Socials","Weight": 0.4}, 
+				{"Group": "WebDriver.Communications","Weight": 0.3},
+                {"Group": "Default.Quiet","Weight": 0.2}
+			]
+        },
+        {
+            "Name": "Shift 2",
+            "Duration": "05:30:00",
+            "Jitter": "00:02:00",
+            "TransitionDelay": "00:05:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Downtime 2",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+                {"Group": "Default.Quiet","Weight": 1.0},
+                {"Group": "AppDriver.Dialer","Weight": 0.1}
+			]
+        },
+        {
+            "Name": "Downtime 2",
+            "Duration": "03:00:00",
+            "Jitter": "00:02:00",
+            "TransitionDelay": "00:05:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Shift 3",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+				{"Group": "WebDriver.News","Weight": 0.7}, 
+				{"Group": "WebDriver.Socials","Weight": 0.4}, 
+				{"Group": "WebDriver.Communications","Weight": 0.3},
+                {"Group": "WebDriver.Games","Weight": 0.5},
+                {"Group": "WebDriver.Quiet","Weight": 0.2}
+			]
+        },
+        {
+            "Name": "Shift 3",
+            "Duration": "03:00:00",
+            "Jitter": "00:02:00",
+            "TransitionDelay": "00:05:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Sleep",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+                {"Group": "Default.Quiet","Weight": 1.0},
+                {"Group": "WebDriver.Communications","Weight": 0.1}
+			]
+        },
+        {
+            "Name": "Sleep",
+            "Duration": "05:30:00",
+            "Jitter": "00:02:00",
+            "TransitionDelay": "00:05:00",
+            "TransitionTargets": [
+                {
+                    "Node": "Wake Up",
+                    "Overrides": [],
+                    "TransitionConditions": ["default"]
+                }
+            ],
+            "RankedTraffic": [
+                {"Group": "Default.Quiet","Weight": 1.0}
+			]
+        }
+    ]
+}

@@ -1,0 +1,209 @@
+{
+    "Name": "F16 Pilot",
+    "Version": "0.0.1",
+    "ProfileID": "dbe263f4-a5b5-4674-8720-5503bd6f20e7",
+
+
+    "AvailableTrafficGroups": [
+		{
+			"Group": "Entertainment",
+			"Instructions": [
+				{"Group": "WebDriver.Youtube", "Duration": "00:00:00"},
+            	{"Group": "AppDriver.Spotify", "Duration": "00:00:00"}
+			]
+		}, 
+		{
+			"Group": "Social",
+			"Instructions": [
+        	    {"Group": "AppDriver.Instagram", "Duration": "00:00:00"},
+        	    {"Group": "AppDriver.Facebook", "Duration": "00:00:00"},
+        	    {"Group": "AppDriver.Signal", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Productivity & Finance",
+			"Instructions": [
+        	    {"Group": "WebDriver.Outlook", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.USAA", "Duration": "00:00:00"},
+        	    {"Group": "AppDriver.MicrosoftAuthenticator", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Education",
+			"Instructions": [
+            	{"Group": "AppDriver.Duolingo", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Creativity",
+			"Instructions": [
+            	{"Group": "AppDriver.Photos", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Health & Fitness",
+			"Instructions": [
+            	{"Group": "AppDriver.Health", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Information & Reading",
+			"Instructions": [
+        	    {"Group": "AppDriver.News", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.CNN", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.MSN", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.Fox", "Duration": "00:00:00"},
+        	    {"Group": "WebDriver.MSNBC", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Shopping & Food",
+			"Instructions": [
+            	{"Group": "AppDriver.Amazon", "Duration": "00:00:00"}
+        	]
+		}, 
+		{
+			"Group": "Travel",
+			"Instructions": [
+            	{"Group": "AppDriver.HotelTrivago", "Duration": "00:00:00"},
+            	{"Group": "AppDriver.AirBnB", "Duration": "00:00:00"}
+        	]
+		}
+	],
+
+
+    "TransitionConditions": [
+		{
+			"Name": "LateNight",
+			"Conditions": [
+				"LocalTime() > 22:00:00"
+			]
+		},
+		{
+			"Name": "Day 2 Patrol 1",
+			"Conditions": [
+				"OperationTime() > StartTime() + 24:00:00",
+				"OperationTime() < StartTime() + 36:00:00",
+				"LocalTime() > 08:00:00",
+				"LocalTime() < 09:00:00"
+			]
+		},
+		{
+			"Name": "Day 2 Patrol 2",
+			"Conditions": [
+				"OperationTime() > StartTime() + 36:00:00",
+				"OperationTime() < StartTime() + 48:00:00",
+				"LocalTime() > 13:40:00",
+				"LocalTime() < 14:40:00"
+			]
+		},
+		{
+			"Name": "Day 3 Leave",
+			"Conditions": [
+				"OperationTime() > StartTime() + 72:00:00",
+				"LocalTime() > 18:40:00"
+			]
+		}
+	],
+
+
+
+
+
+
+
+    "Schedule": [
+        {
+			"Name": "WakeUp",
+			"Duration": "00:15:00",
+			"Jitter": "00:02:00",
+			"TransitionDelay": "00:05:00",
+			"TransitionTargets": [
+				{
+					"Node": "DownTime", 
+					"Overrides": [],
+					"TransitionConditions": [
+						"default"	
+					]
+				}
+			],
+			"RankedTraffic": [
+				{"Group": "WebDriver.News","Weight": 0.7}, 
+				{"Group": "WebDriver.Facebook","Weight": 0.4}, 
+				{"Group": "WebDriver.Duolingo","Weight": 0.2}
+			]
+		},
+		{
+			"Name": "DownTime",
+            "Duration": "02:00:00",
+            "Jitter": "00:05:00",
+			"TransitionDelay": "00:10:00",
+            "TransitionTargets": [
+				{
+					"Node": "Patrol",
+					"Overrides": [],
+					"TransitionConditions": [
+						"Day 2 Patrol 1",
+						"Day 2 Patrol 2"
+					]
+				},
+				{
+					"Node": "Sleep",
+					"Overrides": [],
+					"TransitionConditions": ["LateNight"]
+				},
+				{
+					"Node": "RTB",
+					"Overrides":[],
+					"TransitionConditions": ["Day 3 Leave"]
+				},
+				{
+					"Node": "DownTime",
+					"Overrides": [],
+					"TransitionConditions": ["default"]
+				}
+			],
+			"RankedTraffic": [
+                {"Group": "Default.Quiet", "Weight": 1.0}
+            ]
+		},
+		{
+			"Name": "Patrol",
+            "Duration": "01:30:00",
+            "Jitter": "00:15:00",
+			"TransitionDelay": "00:03:00",
+            "TransitionTargets": [
+				{
+					"Node": "DownTime",
+					"Overrides": [],
+					"TransitionConditions": ["default"]
+				}
+			],
+			"RankedTraffic": [
+                {"Group": "Default.FullDark", "Weight": 1.0}
+            ]
+		},
+        {
+			"Name": "Sleep",
+            "Duration": "05:30:00",
+            "Jitter": "00:05:00",
+			"TransitionDelay": "00:10:00",
+            "TransitionTargets": [
+				{"Node": "WakeUp", "Overrides":[],"TransitionConditions":["default"]}
+			],
+			"RankedTraffic": [
+                {"Group": "Default.Quiet", "Weight": 1.0}
+            ]
+        },
+		{
+			"Name": "RTB",
+			"Duration": "01:00:00",
+			"Jitter": "00:00:00",
+			"TransitionDelay": "00:00:00",
+			"TransitionTargets": [],
+			"RankedTraffic": [
+                {"Group": "Default.Quiet", "Weight": 1.0}
+            ]
+		}
+    ]
+}

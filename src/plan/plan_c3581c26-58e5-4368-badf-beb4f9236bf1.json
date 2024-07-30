@@ -1,0 +1,12 @@
+{
+  "PlanID": "c3581c26-58e5-4368-badf-beb4f9236bf1",
+  "RequiredPersonas": {},
+  "Schedule": [
+    {
+      "Persona": "person123",
+      "StartTime": "2024-07-30T13:54",
+      "EndTime": "2024-07-30T18:54",
+      "Jitter": "2"
+    }
+  ]
+}
