@@ -1,0 +1,11 @@
+{
+  "userId": "string",
+  "deviceId": 0,
+  "profileID": 0,
+  "metadata": {
+    "createBy": "string",
+    "created": "2024-07-25T18:37:32.795Z",
+    "modifiedBy": "string",
+    "modified": "2024-07-25T18:37:32.795Z"
+  }
+}
