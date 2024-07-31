@@ -287,5 +287,15 @@ app.get('/logout', (req, res) => {
     res.render('pages/logout');
 });
 
+/**
+ * {
+ *  "os": "somestring",
+ *  "manufacturer": "whoever",
+ *  "restorePoint": {
+ *  
+ *     }
+ * }
+ */
+
 module.exports = app.listen(PORT); 
 console.log(`Server is listening on port ${PORT}`);

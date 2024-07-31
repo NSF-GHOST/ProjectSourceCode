@@ -2,20 +2,21 @@
   "missionId": 1,
   "active": true,
   "config": {
+    "name": "",
     "missionStartTime": "long",
     "missionEndTime": "long",
     "details": [
         {
-            "userID": "",
-            "tasks": [
+            "userId": {
+              "tasks": [
                 {
                     "order": 0,
                     "duration": "in ms",
                     "execute": "PERSONA_SWAP",
                     "parameters": ["0"]
                 }
-            ]
-
+              ]
+            }
         }
     ]
   },
