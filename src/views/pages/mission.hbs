@@ -222,10 +222,8 @@
 
         async function savePersonas() {
             const personasToSave = personas.map(persona => {
-                const personaId = generateUUID();
                 return {
-                    personaId: personaId,
-                    personaName: persona.name,
+                    personaID: 0,
                     assignedIMEI: persona.imei,
                     assignedSimCardId: persona.sim,
                     assignedIndivActivityProfile: persona.activity,

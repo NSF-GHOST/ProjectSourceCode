@@ -1,0 +1,14 @@
+{
+    "os": "whatever",
+    "manufacturer": "whoever",
+    "restorePoint": {
+        "androidId": "blah"
+    },
+    "metaData": {
+        "createBy": "User Id",
+        "created": "ISO Timestamp",
+        "modifiedBy": "User Id",
+        "modifier": "ISO Timestamp" 
+    },
+    "originalImei": "15charstring!!!"
+}
