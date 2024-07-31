@@ -54,6 +54,18 @@
 <body>
     {{> nav}}
     <div class="container">
+        <h2>Create Profile</h2>
+        <form id="createProfileForm">
+            <div class="form-group">
+                <label for="profileName">Name:</label>
+                <input type="text" id="profileName" name="profileName" required>
+            </div>
+            <button type="button" class="create-profile-button" onclick="createProfile()">Create Profile</button>
+        </form>
+        <div class="profile-id-display" id="profileIdDisplay"></div>
+    </div>
+
+    <div class="container">
         <div class="form-container">
             <h2>Add Persona</h2>
             <form id="personaForm">
@@ -116,6 +128,36 @@
             });
         }
 
+        // create profile 
+        let profileId = 0;
+
+        function createProfile() {
+            const form = document.getElementById('createProfileForm');
+            const profileName = form.elements['profileName'].value;
+
+            if (profileName.trim() !== '') {
+                const payload = {
+                    name: profileName,
+                    metadata: {
+                        createBy: "string",
+                        created: new Date().toISOString(),
+                        modifiedBy: "string",
+                        modified: new Date().toISOString()
+                    }
+                };
+
+                console.log('Payload:', JSON.stringify(payload));
+
+                profileId = 0; // fixed right now
+                document.getElementById('profileIdDisplay').innerText = `Profile ID: ${profileId}`;
+
+                console.log(`Profile created with ID: ${profileId} and Name: ${profileName}`);
+            } else {
+                alert('Please enter a valid profile name.');
+            }
+        }
+
+        // create persona
         function addPersona() {
             const form = document.getElementById('personaForm');
             const personaName = form.elements['personaName'].value;
