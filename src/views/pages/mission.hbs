@@ -51,8 +51,10 @@
         }
     </style>
 </head>
-<body>
+<body> 
     {{> nav}}
+
+    &nbsp;&nbsp;
     <div class="container">
         <h2>Create Profile</h2>
         <form id="createProfileForm">
@@ -63,45 +65,109 @@
             <button type="button" class="create-profile-button" onclick="createProfile()">Create Profile</button>
         </form>
         <div class="profile-id-display" id="profileIdDisplay"></div>
-    </div>
-
+    </div> &nbsp;
     <div class="container">
         <div class="form-container">
-            <h2>Add Persona</h2>
+            <h2>Create Persona</h2>
             <form id="personaForm">
                 <div class="form-group">
                     <label for="personaName">Name:</label>
                     <input type="text" id="personaName" name="personaName" required>
                 </div>
                 <div class="form-group">
-                    <label for="personaSIM">SIM:</label>
-                    <input type="text" id="personaSIM" name="personaSIM" required>
-                </div>
-                <div class="form-group">
                     <label for="personaIMEI">IMEI:</label>
                     <input type="text" id="personaIMEI" name="personaIMEI" required>
                 </div>
                 <div class="form-group">
-                    <label for="activityProfile">Individual Activity Profile:</label>
-                    <input type="text" id="activityProfile" name="activityProfile" required>
+                    <label for="personaSIM">simSlot:</label>
+                    <select id="personaSIM" name="personaSIM" required>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
                 </div>
-                <button type="button" class="add-button" onclick="addPersona()">Add</button>
-                <button type="button" class="save-personas-button" onclick="savePersonas()">Save Personas</button>
+                <div class="form-group">
+                    <label for="activityProfile">Individual Activity Profile:</label>
+                    <select id="activityProfile" name="activityProfiles" required>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <button type="button" class="add-button" onclick="createPersona()">Create Persona</button>
             </form>
-
-            <div class="saved-profiles">
-                <div class="saved-profiles-title">Saved Profiles:</div>
-                <div id="savedProfiles">
+            &nbsp;
+            <div class="saved-personas">
+                <div class="saved-personas-title">Saved Personas:</div>
+                <div id="savedPersonas">
                 </div>
             </div>
-        </div>
-
+        </div> &nbsp;
         <div class="shopping-cart">
             <div class="shopping-cart-title">Selected Personas:</div>
             <div id="cartItems">
             </div>
         </div>
-    </div>
+    </div> &nbsp;
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Create Device</h2>
+            <form id="deviceForm">
+                <div class="form-group">
+                    <label for="deviceName">Name:</label>
+                    <input type="text" id="deviceName" name="deviceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="deviceOS">Operating System:</label>
+                    <input type="text" id="deviceOS" name="deviceOS" required>
+                </div>
+                <div class="form-group">
+                    <label for="deviceMan">Manufacturer:</label>
+                    <input type="text" id="deviceMan" name="deviceMan" required>
+                </div>
+                <div class="form-group">
+                    <label for="androidId">Android ID?:</label>
+                    <select id="androidId" name="androidId" required>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="originalImei">Original IMEI:</label>
+                    <input type="text" id="originalImei" name="originalImei" required>
+                </div>
+                <button type="button" class="add-button" onclick="createDevice()">Create Device</button>
+            </form>
+            &nbsp;
+            <div class="saved-devices">
+                <div class="saved-devices-title">Saved Devices:</div>
+                <div id="savedDevicces">
+                </div>
+            </div>
+        </div> &nbsp;
+        <div class="shopping-cart">
+            <div class="shopping-cart-title">Selected Devices:</div>
+            <div id="cartDevices">
+            </div>
+        </div>
+    </div> &nbsp;
 
     <div class="container">
         <h2>Mission Plan</h2>
@@ -113,9 +179,6 @@
 
     <script>
         let username = '';
-        const personas = [];
-        const savedPersonas = [];
-
         fetch('/username')
             .then(response => response.json())
             .then(data => username = data.username)
@@ -139,7 +202,7 @@
                 const payload = {
                     name: profileName,
                     metadata: {
-                        createBy: "string",
+                        createBy: username,
                         created: new Date().toISOString(),
                         modifiedBy: "string",
                         modified: new Date().toISOString()
@@ -158,17 +221,40 @@
         }
 
         // create persona
-        function addPersona() {
+        const personas = [];
+        const savedPersonas = [];
+
+        function createPersona() {
             const form = document.getElementById('personaForm');
-            const personaName = form.elements['personaName'].value;
-            const personaSIM = form.elements['personaSIM'].value;
-            const personaIMEI = form.elements['personaIMEI'].value;
+            const name = form.elements['personaName'].value;
+            const sim = form.elements['personaSIM'].value;
+            const imei = form.elements['personaIMEI'].value;
             const activityProfile = form.elements['activityProfile'].value;
 
+                const payload = {
+                    assignedIMEI: imei,
+                    simCardInformation: {
+                        bankId: 1,
+                        simSlot: sim
+                    },
+                    activityProfileId: activityProfile,
+                    metadata: {
+                        createBy: username,
+                        created: new Date().toISOString(),
+                        modifiedBy: "string",
+                        modified: new Date().toISOString()
+                    }
+                };
+
+                console.log('Payload:', JSON.stringify(payload));
+
+                console.log(`Persona created with IMEI: ${imei}, simSlot: ${sim}, Activity Profile: ${activity}, and IMEI: ${imei}.`);
+
+            
             const persona = {
-                name: personaName,
-                sim: personaSIM,
-                imei: personaIMEI,
+                name: name,
+                sim: sim,
+                imei: imei,
                 activity: activityProfile
             };
 
@@ -193,8 +279,9 @@
                 <div class="persona-name" onclick="togglePersonaDetails('${persona.name}')">${persona.name}</div>
                 <div class="remove-btn" onclick="removePersona('${persona.name}')">X</div>
                 <div id="details-${persona.name}" class="details-container">
-                    <p><strong>SIM:</strong> ${persona.sim}</p>
                     <p><strong>IMEI:</strong> ${persona.imei}</p>
+                    <p><strong>bankId:</strong> 1</p>
+                    <p><strong>simSlot:</strong> ${persona.sim}</p>
                     <p><strong>Individual Activity Profile:</strong> ${persona.activity}</p>
                 </div>
             `;
@@ -262,13 +349,150 @@
             }
         }
 
+        // create device
+        const devices = [];
+        const savedDevices = [];
+
+        function createDevice() {
+            const form = document.getElementById('deviceForm');
+            const name = form.elements['deviceName'].value;
+            const os = form.elements['deviceOS'].value;
+            const manufacturer = form.elements['deviceMan'].value;
+            const androidId = form.elements['androidId'].value;
+            const imei = form.elements['originalImei'].value;
+
+            if (os.trim() !== '' && manufacturer.trim() !== '' && androidId.trim() !== '' && imei.trim() !== '') {
+                const payload = {
+                    os: os,
+                    manufacturer: manufacturer,
+                    restorePoint: {
+                        androidId: androidId
+                    },
+                    metaData: {
+                        createBy: username,
+                        created: new Date().toISOString(),
+                        modifiedBy: "NA",
+                        modifier: new Date().toISOString()
+                    },
+                    originalImei: imei
+                };
+
+                console.log('Payload:', JSON.stringify(payload));
+
+                console.log(`Device created with OS: ${os}, Manufacturer: ${manufacturer}, and original IMEI ${imei}.`);
+
+                const device = {
+                    name: name,
+                    os: os,
+                    manufacturer: manufacturer,
+                    androidId: androidId,
+                    originalImei: imei
+                };
+                if (!devices.find(d => d.name === device.name)) {
+                    devices.push(device);
+                    addDeviceToCart(device);
+                }
+                if (!savedDevices.find(d => d.name === device.name)) {
+                    savedDevices.push(devices);
+                    addToSavedProfiles(devices);
+                }
+            } else {
+                alert('Please fill in all the fields.');
+            }
+            form.reset();
+        }
+
+        function addDeviceToCart(device) {
+            const personaList = document.getElementById('cartDevices');
+            const personaItem = document.createElement('div');
+            personaItem.classList.add('device-item');
+            personaItem.innerHTML = `
+                <div class="device-name" onclick="togglePersonaDetails('${device.name}')">${device.name}</div>
+                <div class="remove-btn" onclick="removePersona('${device.name}')">X</div>
+                <div id="details-${device.name}" class="details-container">
+                    <p><strong>OS:</strong> ${device.os}</p>
+                    <p><strong>Manufacturer:</strong> ${device.manufacturer}</p>
+                    <p><strong>androidId:</strong> ${persona.androidId}</p>
+                    <p><strong>originalIMEI:</strong> ${persona.originalImei}</p>
+                </div>
+            `;
+            personaList.appendChild(personaItem);
+        }
+
+        function addToSavedDevices(device) {
+            const savedProfilesList = document.getElementById('savedDevices');
+            const savedPersonaItem = document.createElement('div');
+            savedPersonaItem.classList.add('saved-device-item');
+            savedPersonaItem.innerHTML = `
+                <div class="saved-device-name" onclick="addSavedDeviceToCart('${device.name}')">${device.name}</div>
+                <div class="remove-btn" onclick="removeSavedDevice('${device.name}')">X</div>
+            `;
+            savedProfilesList.appendChild(savedPersonaItem);
+        }
+
+        function togglePersonaDetails(name) {
+            const detailsContainer = document.getElementById(`details-${name}`);
+            if (detailsContainer.style.display === 'none' || detailsContainer.style.display === '') {
+                detailsContainer.style.display = 'block';
+            } else {
+                detailsContainer.style.display = 'none';
+            }
+        }
+
+        function removeDevice(name) {
+            const index = devices.findIndex(device => device.name === name);
+            if (index !== -1) {
+                devices.splice(index, 1);
+            }
+
+            const deviceItems = document.querySelectorAll('.device-item');
+            deviceItems.forEach(item => {
+                if (item.querySelector('.device-name').textContent === name) {
+                    item.remove();
+                }
+            });
+
+            const detailsContainer = document.getElementById(`details-${name}`);
+            if (detailsContainer) {
+                detailsContainer.remove();
+            }
+        }
+
+        function removeSavedDevices(name) {
+            const index = savedDevices.findIndex(device => device.name === name);
+            if (index !== -1) {
+                savedDevices.splice(index, 1);
+            }
+
+            const savedDeviceItems = document.querySelectorAll('.saved-device-item');
+            savedDeviceItems.forEach(item => {
+                if (item.querySelector('.saved-device-name').textContent === name) {
+                    item.remove();
+                }
+            });
+        }
+
+        function addSavedDeviceToCart(name) {
+            const device = savedDevices.find(d => d.name === name);
+            if (!devices.find(d => d.name === name)) {
+                devices.push(device);
+                addToCart(device);
+            }
+        }
+
+        /*
+        // summarized into createPersonas()
+
         async function savePersonas() {
             const personasToSave = personas.map(persona => {
                 return {
                     personaID: 0,
                     assignedIMEI: persona.imei,
-                    assignedSimCardId: persona.sim,
-                    assignedIndivActivityProfile: persona.activity,
+                    simCardInformation: {
+                        bankId: 1,
+                        simSlot: persona.sim
+                    },
+                    activityProfileId: persona.activity,
                     metadata: {
                         createBy: username,
                         created: new Date().toISOString(),
@@ -298,15 +522,17 @@
                 console.error('Error saving personas:', error);
             }
         }
+        */
 
         function showAlert(personaNames) {
             const message = `Personas saved successfully:\n\n${personaNames.map(name => `• ${name}`).join('\n')}`;
             alert(message);
         }
-
+/*
         document.addEventListener('DOMContentLoaded', () => {
             fetchActivityProfiles();
         });
+
 
         async function fetchActivityProfiles() {
             try {
@@ -323,7 +549,7 @@
                 console.error('Error fetching activity profiles:', error);
             }
         }
-
+*/
         function addDevice() {
             const deviceSections = document.getElementById('deviceSections');
             const deviceId = generateUUID();

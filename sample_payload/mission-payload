@@ -3,8 +3,8 @@
   "active": true,
   "config": {
     "name": "",
-    "missionStartTime": "long",
-    "missionEndTime": "long",
+    "startTimeInMs": "long",
+    "endTimeInMs": "long",
     "details": [
         {
             "userId": {
