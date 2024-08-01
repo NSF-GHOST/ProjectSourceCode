@@ -13,7 +13,7 @@
               "order": 0,
               "duration": "in ms",
               "execute": "PERSONA_SWAP",
-              "parameters": ["0"]
+              "parameters": [""]
             }
           ]
       }
@@ -21,7 +21,7 @@
   },
   "profileId": 0,
   "metadata": {
-    "createBy": "spy",
+    "createdBy": "spy",
     "created": "2024-01-15T06:54:13+00:00",
     "modifiedBy": null,
     "modified": null
