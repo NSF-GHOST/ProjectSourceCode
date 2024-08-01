@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Persona</title>
     <style>
+        .without_ampm::-webkit-datetime-edit-ampm-field {
+            display: none;
+        }
+        input[type=time]::-webkit-clear-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -o-appearance: none;
+            -ms-appearance:none;
+            appearance: none;
+            margin: -10px; 
+        }
+
         .persona-item, .saved-persona-item {
             display: flex;
             flex-direction: column;
@@ -109,7 +121,7 @@
             &nbsp;
             <div class="saved-personas">
                 <div class="saved-personas-title">Saved Personas:</div>
-                <div id="savedPersonas">
+                <div id="savedPersona">
                 </div>
             </div>
         </div> &nbsp;
@@ -158,7 +170,7 @@
             &nbsp;
             <div class="saved-devices">
                 <div class="saved-devices-title">Saved Devices:</div>
-                <div id="savedDevicces">
+                <div id="savedDevices">
                 </div>
             </div>
         </div> &nbsp;
@@ -170,11 +182,33 @@
     </div> &nbsp;
 
     <div class="container">
-        <h2>Mission Plan</h2>
-        <div><strong>Plan ID:</strong> <span id="planId"></span></div>
-        <button type="button" class="add-device-button" onclick="addDevice()">+ Add Device</button>
-        <div id="deviceSections"></div>
-        <button type="button" class="add-schedule-button" onclick="generatePlan()">Generate Plan</button>
+        <h2>Create Mission</h2>
+        <form id="createMissionForm">
+            <div class="form-group">
+                <label for="missionName">Mission Name:</label>
+                <input type="text" id="missionName" name="missionName" required>
+            </div>
+            <div class="form-group">
+                <label for="startTime">Start Time:</label>
+                <input type="datetime-local" id="startTime" name="startTime" required>
+            </div>
+            <div class="form-group">
+                <label for="endTime">End Time:</label>
+                <input type="datetime-local" id="endTime" name="endTime" required>
+            </div>
+            <div class="form-group">
+                <label for="userId">User ID:</label>
+                <select id="userId" name="userId">
+                    <option value="1">1</option>
+                </select>
+            </div> &nbsp;
+            <button type="button" class="button" onclick="addUser()">Add User</button>
+        </form>
+
+        <div id="userContainer" class="user-container"></div> &nbsp;
+    </div>
+    <div class="container">
+        <button type="button" class="button" onclick="generatePlan()">Generate Plan</button>
     </div>
 
     <script>
@@ -202,9 +236,9 @@
                 const payload = {
                     name: profileName,
                     metadata: {
-                        createBy: username,
+                        createdBy: username,
                         created: new Date().toISOString(),
-                        modifiedBy: "string",
+                        modifiedBy: "NA",
                         modified: new Date().toISOString()
                     }
                 };
@@ -239,7 +273,7 @@
                     },
                     activityProfileId: activityProfile,
                     metadata: {
-                        createBy: username,
+                        createdBy: username,
                         created: new Date().toISOString(),
                         modifiedBy: "string",
                         modified: new Date().toISOString()
@@ -248,7 +282,7 @@
 
                 console.log('Payload:', JSON.stringify(payload));
 
-                console.log(`Persona created with IMEI: ${imei}, simSlot: ${sim}, Activity Profile: ${activity}, and IMEI: ${imei}.`);
+                console.log(`Persona created with IMEI: ${imei}, simSlot: ${sim}, Activity Profile: ${activityProfile}, and IMEI: ${imei}.`);
 
             
             const persona = {
@@ -265,7 +299,7 @@
 
             if (!savedPersonas.find(p => p.name === persona.name)) {
                 savedPersonas.push(persona);
-                addToSavedProfiles(persona);
+                addToSavedPersonas(persona);
             }
 
             form.reset();
@@ -288,15 +322,15 @@
             personaList.appendChild(personaItem);
         }
 
-        function addToSavedProfiles(persona) {
-            const savedProfilesList = document.getElementById('savedProfiles');
+        function addToSavedPersonas(persona) {
+            const savedPersonaList = document.getElementById('savedPersona');
             const savedPersonaItem = document.createElement('div');
             savedPersonaItem.classList.add('saved-persona-item');
             savedPersonaItem.innerHTML = `
                 <div class="saved-persona-name" onclick="addSavedPersonaToCart('${persona.name}')">${persona.name}</div>
                 <div class="remove-btn" onclick="removeSavedPersona('${persona.name}')">X</div>
             `;
-            savedProfilesList.appendChild(savedPersonaItem);
+            savedPersonaList.appendChild(savedPersonaItem);
         }
 
         function togglePersonaDetails(name) {
@@ -369,10 +403,10 @@
                         androidId: androidId
                     },
                     metaData: {
-                        createBy: username,
+                        createdBy: username,
                         created: new Date().toISOString(),
                         modifiedBy: "NA",
-                        modifier: new Date().toISOString()
+                        modified: new Date().toISOString()
                     },
                     originalImei: imei
                 };
@@ -393,8 +427,8 @@
                     addDeviceToCart(device);
                 }
                 if (!savedDevices.find(d => d.name === device.name)) {
-                    savedDevices.push(devices);
-                    addToSavedProfiles(devices);
+                    savedDevices.push(device);
+                    addToSavedDevices(device);
                 }
             } else {
                 alert('Please fill in all the fields.');
@@ -403,40 +437,31 @@
         }
 
         function addDeviceToCart(device) {
-            const personaList = document.getElementById('cartDevices');
-            const personaItem = document.createElement('div');
-            personaItem.classList.add('device-item');
-            personaItem.innerHTML = `
+            const deviceList = document.getElementById('cartDevices');
+            const deviceItem = document.createElement('div');
+            deviceItem.classList.add('device-item');
+            deviceItem.innerHTML = `
                 <div class="device-name" onclick="togglePersonaDetails('${device.name}')">${device.name}</div>
                 <div class="remove-btn" onclick="removePersona('${device.name}')">X</div>
                 <div id="details-${device.name}" class="details-container">
                     <p><strong>OS:</strong> ${device.os}</p>
                     <p><strong>Manufacturer:</strong> ${device.manufacturer}</p>
-                    <p><strong>androidId:</strong> ${persona.androidId}</p>
-                    <p><strong>originalIMEI:</strong> ${persona.originalImei}</p>
+                    <p><strong>androidId:</strong> ${device.androidId}</p>
+                    <p><strong>originalIMEI:</strong> ${device.originalImei}</p>
                 </div>
             `;
-            personaList.appendChild(personaItem);
+            deviceList.appendChild(deviceItem);
         }
 
         function addToSavedDevices(device) {
-            const savedProfilesList = document.getElementById('savedDevices');
-            const savedPersonaItem = document.createElement('div');
-            savedPersonaItem.classList.add('saved-device-item');
-            savedPersonaItem.innerHTML = `
+            const savedDeviceList = document.getElementById('savedDevices');
+            const savedDeviceItem = document.createElement('div');
+            savedDeviceItem.classList.add('saved-device-item');
+            savedDeviceItem.innerHTML = `
                 <div class="saved-device-name" onclick="addSavedDeviceToCart('${device.name}')">${device.name}</div>
                 <div class="remove-btn" onclick="removeSavedDevice('${device.name}')">X</div>
             `;
-            savedProfilesList.appendChild(savedPersonaItem);
-        }
-
-        function togglePersonaDetails(name) {
-            const detailsContainer = document.getElementById(`details-${name}`);
-            if (detailsContainer.style.display === 'none' || detailsContainer.style.display === '') {
-                detailsContainer.style.display = 'block';
-            } else {
-                detailsContainer.style.display = 'none';
-            }
+            savedDeviceList.appendChild(savedDeviceItem);
         }
 
         function removeDevice(name) {
@@ -550,19 +575,6 @@
             }
         }
 */
-        function addDevice() {
-            const deviceSections = document.getElementById('deviceSections');
-            const deviceId = generateUUID();
-            const deviceSection = document.createElement('div');
-            deviceSection.classList.add('device-section');
-            deviceSection.innerHTML = `
-                <div><strong>Device ID:</strong> ${deviceId}</div>
-                <button type="button" class="add-button" onclick="addPersonaForm('${deviceId}')">+ Add Persona</button>
-                <div id="personaFormContainer-${deviceId}"></div>
-            `;
-            deviceSections.appendChild(deviceSection);
-        }
-
         function addPersonaForm(deviceId) {
             const container = document.getElementById(`personaFormContainer-${deviceId}`);
             const formId = generateUUID();
@@ -590,10 +602,104 @@
             }
         }
 
+        let mission = {
+            active: false,
+            config: {
+                name: "",
+                startTimeInMs: "",
+                endTimeInMs: "",
+                details: [
+                ]
+            },
+            profileId: 0,
+            metaData: {
+                createdBy: username,
+                created: new Date().toISOString(),
+                modifiedBy: "NA",
+                modified: new Date().toISOString()
+            },
+        }
+
+        function addUser() {
+            const userId = document.getElementById('userId').value;
+            const userContainer = document.getElementById('userContainer');
+
+            const userElement = document.createElement('div');
+            userElement.className = 'user';
+            userElement.innerHTML = `&nbsp;
+                <h4>User ID: ${userId}</h4>
+                <div class="task-container">
+                    <label for="taskType${userId}">Task Type:</label>
+                    <select id="taskType${userId}" name="taskType">
+                        <option value="PERSONA_SWAP">PERSONA_SWAP</option>
+                    </select>
+                    <button type="button" onclick="addTask(${userId})">Add Task</button>
+                    <div id="tasksContainer${userId}"></div>
+                </div>
+            `;
+
+            userContainer.appendChild(userElement);
+
+            // add user details structure to the mission config
+            mission.config.details.push({
+                userId: userId,
+                "tasks": []
+            });
+        }
+
+        function addTask(userId) {
+            const taskType = document.getElementById(`taskType${userId}`).value;
+            const tasksContainer = document.getElementById(`tasksContainer${userId}`);
+
+            if (taskType === 'PERSONA_SWAP') {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task';
+                taskElement.innerHTML = `&nbsp;
+                    <div class="form-group">
+                        <label for="personaId${userId}">Persona ID:</label>
+                        <input type="text" id="personaId${userId}" name="personaId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration${userId}">Duration (mm:ss):</label>
+                        <input type="text" id="duration${userId}" name="duration" pattern="^[0-5]?[0-9]:[0-5][0-9]$" title="Duration must be in the format mm:ss" required>
+                    </div>
+                    <button type="button" onclick="saveTask(${userId})">Save Task</button>
+                `;
+
+                tasksContainer.appendChild(taskElement);
+            }
+        }
+
+        function saveTask(userId) {
+            const personaId = document.getElementById(`personaId${userId}`).value;
+            const duration = document.getElementById(`duration${userId}`).value.split(':');
+            const durationInMs = (parseInt(duration[0]) * 60 + parseInt(duration[1])) * 1000;
+
+            // Find the device details in the mission config
+            const userDetails = mission.config.details.find(detail => detail.userId === "user1");
+
+            const task = {
+                order: userDetails.tasks.length,
+                duration: durationInMs,
+                execute: "PERSONA_SWAP",
+                parameters: [personaId]
+            };
+
+            userDetails.tasks.push(task);
+
+            alert('Task successfully saved');
+        }
+
         function generatePlan() {
-            const planId = generateUUID();
-            document.getElementById('planId').textContent = planId;
-            alert(`Plan ID: ${planId}`);
+            const missionName = document.getElementById('missionName').value;
+            const startTime = new Date(document.getElementById('startTime').value).getTime();
+            const endTime = new Date(document.getElementById('endTime').value).getTime();
+
+            mission.config.name = missionName;
+            mission.config.startTimeInMs = startTime;
+            mission.config.endTimeInMs = endTime;
+
+            console.log('Mission Payload:', JSON.stringify(mission, null, 2));
         }
     </script>
 </body>

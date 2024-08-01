@@ -6,18 +6,17 @@
     "startTimeInMs": "long",
     "endTimeInMs": "long",
     "details": [
-        {
-            "userId": {
-              "tasks": [
-                {
-                    "order": 0,
-                    "duration": "in ms",
-                    "execute": "PERSONA_SWAP",
-                    "parameters": ["0"]
-                }
-              ]
+      {
+          "userId": "",
+          "tasks": [
+            {
+              "order": 0,
+              "duration": "in ms",
+              "execute": "PERSONA_SWAP",
+              "parameters": ["0"]
             }
-        }
+          ]
+      }
     ]
   },
   "profileId": 0,
