@@ -155,6 +155,14 @@ app.get('/home', (req, res) => {
     res.render('pages/home');
 });
 
+app.get('/device_permissions', (req, res) => {
+    res.render('pages/device_permissions');
+});
+
+app.get('/persona_permissions', (req, res) => {
+    res.render('pages/persona_permissions');
+});
+
 app.get('/mission', (req, res) => {
     res.render('pages/mission', { username: req.username });
 });

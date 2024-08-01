@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Persona</title>
+    <style>
+        .persona-item, .saved-persona-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .persona-name {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .details-container {
+            display: none; /* Hide details by default */
+            margin-top: 10px;
+        }
+
+        .remove-btn {
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+            align-self: flex-end;
+        }
+
+        .device-section, .persona-form {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .persona-form {
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .add-device-button, .add-schedule-button, .add-button, .save-personas-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    {{> nav}}
+    <div class="container">
+        <div class="form-container">
+            <h2>Create Persona Access</h2>
+            <form id="personaAccessForm">
+                <div class="form-group">
+                    <label for="personaId">PersonaID:</label>
+                    <input type="text" id="personaId" name="personaId" required>
+                </div>
+                <button type="button" class="save-personas-button" onclick="savePersonaRecord()">Save Personas</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let username = '';
+
+        fetch('/username')
+            .then(response => response.json())
+            .then(data => username = data.username)
+            .catch(error => console.error('Error fetching username:', error));
+
+
+        async function savePersonaRecord() {
+
+            const form = document.getElementById('personaAccessForm');
+            const personaId = form.elements['personaId'].value;
+            
+            const personaRecord = {
+                userId: username,
+                personaId: Number(personaId),
+                profileId: 0,
+                metadata: {
+                    createBy: username,
+                    created: new Date().toISOString(),
+                    modifiedBy: "NA",
+                    modified: new Date().toISOString()
+                }
+            }
+
+            console.log(personaRecord);
+
+
+
+            {{!-- Stub for Api --}}
+
+            {{!-- try {
+                const response = await fetch('/save-personas-records', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(personaRecord)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+            } catch (error) {
+                console.error('Error saving user-personas:', error);
+            } --}}
+        }
+
+        
+
+    </script>
+</body>
+</html>
