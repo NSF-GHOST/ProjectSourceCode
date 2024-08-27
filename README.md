@@ -10,5 +10,5 @@
 * Run server:
     `docker compose up` OR `docker compose up -d`
 
-* Running on `localhost:3001`
+* Running on `http://localhost:3001`
 
