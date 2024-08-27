@@ -1,11 +1,12 @@
-{
+{  
   "assignedIMEA": "03987510357893",
   "simCardInformation": {
     "bankId": 1,
     "simSlot": 0
   },
+  "activityProfileId": "",
   "metadata": {
-    "createBy": "string",
+    "createdBy": "string",
     "created": "2024-07-25T18:36:31.466Z",
     "modifiedBy": "string",
     "modified": "2024-07-25T18:36:31.466Z"

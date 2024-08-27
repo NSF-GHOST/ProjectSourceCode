@@ -5,7 +5,7 @@
         "androidId": "blah"
     },
     "metaData": {
-        "createBy": "User Id",
+        "createdBy": "User Id",
         "created": "ISO Timestamp",
         "modifiedBy": "User Id",
         "modifier": "ISO Timestamp" 

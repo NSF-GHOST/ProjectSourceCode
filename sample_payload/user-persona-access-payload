@@ -3,7 +3,7 @@
     "personaId": 0,
     "profileId": 0,
     "metadata": {
-      "createBy": "string",
+      "createdBy": "string",
       "created": "2024-07-25T18:38:01.928Z",
       "modifiedBy": "string",
       "modified": "2024-07-25T18:38:01.928Z"
