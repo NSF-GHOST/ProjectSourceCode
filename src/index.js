@@ -24,7 +24,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {
-        secure: false,  // Set to true if using HTTPS
+        secure: true,  // Set to true if using HTTPS
         sameSite: 'None', // Set to 'None' to allow cross-site cookies
         httpOnly: true
     }
@@ -95,7 +95,7 @@ app.get('/', (req, res) => {
     res.redirect('/home');
 });
 
-app.get('/home', keycloak.protect(), (req, res) => {
+app.get('/home', keycloak.protect("ghost:mission-management-modify"), (req, res) => {
     res.render('pages/home', { user: req.kauth.grant.access_token.content });
 });
 
