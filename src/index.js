@@ -1,40 +1,23 @@
 // some problems with fetch
 const express = require('express'); // to build an application server or API
+const app = express();
 const fs = require('fs'); 
 const path = require('path');
-const app = express();
 const handlebars = require('express-handlebars');
 const pgp = require('pg-promise')(); // to connect to the Postgres DB from the node server
 const bodyParser = require('body-parser');
-// const session = require('express-session'); // to set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
+const session = require('express-session'); // to set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  to hash passwords
 const axios = require('axios'); // to make HTTP requests from our server. We'll learn more about it in Part C.
 const PORT = process.env.PORT || 3001;
 
-// keycloak
-const session = require('express-session');
-const Keycloak = require('keycloak-connect');
-
-// create session store
-const memoryStore = new session.MemoryStore();
-
 // configure session
 app.use(session({
-    secret: 'secret-key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: {
-        secure: false,  // Set to true if using HTTPS
-        sameSite: 'None', // Set to 'None' to allow cross-site cookies
-        httpOnly: true
-    }
+    cookie: { secure: false }
 }));
-
-// initialize keycloak
-const keycloak = new Keycloak({ store: memoryStore });
-
-// keycloak middleware
-app.use(keycloak.middleware());
 
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
 const hbs = handlebars.create({
@@ -70,15 +53,6 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json()); // specify the usage of JSON for parsing request body.
 
-// initialize session variables
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        saveUninitialized: false,
-        resave: false,
-    })
-);
-
 app.use(
     bodyParser.urlencoded({
         extended: true,
@@ -95,8 +69,93 @@ app.get('/', (req, res) => {
     res.redirect('/home');
 });
 
+/*
 app.get('/home', keycloak.protect(), (req, res) => {
     res.render('pages/home', { user: req.kauth.grant.access_token.content });
+});
+*/
+
+app.get('/register', (req, res) => {
+    res.render("pages/register");
+});
+
+
+// post endpoint for the register page, processes username and password storage
+app.post('/register', async (req, res) => {
+    // hash the password
+    const hash = await bcrypt.hash(req.body.password, 10);
+    const username = req.body.username;
+
+    // check if the username is valid (not too long, no special characters)
+    if (!username || username.length > 20 || /[!#$%^&*()\/<>,\{\[\}\]\|\\]/.test(username)) {
+        return res.status(400).render("pages/register", { error: true, message: "Username can not have special characters or be more than 20 characters long." });
+    }
+    
+    const insert_query = "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;";
+    
+    // insert the user into the database
+    db.any(insert_query, [req.body.username, hash])
+        .then(function (data) {
+            res.status(200).redirect("/login");
+        })
+        .catch(function (err) {
+            console.log(err);
+            res.status(400).redirect("/register");
+        })
+});
+
+app.get('/login', (req, res) => {
+    res.render("pages/login");
+});
+
+// post endpoint for the login page, processes username and password verification
+app.post('/login', async (req, res) => {
+    const find_user = "SELECT * FROM users WHERE username = $1;";
+
+    // try to find the user
+    db.any(find_user, [req.body.username])
+        .then(async function (data) {
+            var user = data[0];
+
+            // check if user exists at all before we check the password
+            // redirects to register
+            if (!user) {
+                return res.status(400).render("pages/register", { error: true, message: "User does not exist." });
+            }
+
+            // check if the password is correct
+            const match = await bcrypt.compare(req.body.password, user.password);
+
+            // if the password is incorrect, return an error and redirect to the login page
+            if (!match) {
+                return res.status(400).render("pages/login", { error: true, message: "Incorrect password"});
+            }
+            // if the password is correct, set the session user and redirect to the home page
+            else {
+                req.session.user = user;
+                req.session.save();
+                res.status(200).redirect("/home");
+            }
+        })
+        .catch(function (err) {
+            console.log(err);
+            res.status(400).render("pages/register", { error: true, message: "User does not exist.", });
+        })
+});
+
+const auth = (req, res, next) => {
+    if (!req.session.user) {
+      // Default to login page.
+      return res.redirect('/login');
+    }
+    next();
+};
+
+// authentication required
+app.use(auth);
+
+app.get('/home', (req, res) => {
+    res.render('pages/home');
 });
 
 
@@ -106,7 +165,7 @@ app.get('/mission', (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect(keycloak.logoutUrl());
+    // res.redirect(keycloak.logoutUrl());
 });
 
 // grab username
@@ -244,87 +303,3 @@ app.get('/analysis', (req, res) => {
 
 module.exports = app.listen(PORT); 
 console.log(`Server is listening on port ${PORT}`);
-
-/*
-TEST LOGIN AND REGISTER PAGES WITH LOCAL DB
-
-app.get('/register', (req, res) => {
-    res.render("pages/register");
-});
-
-
-// post endpoint for the register page, processes username and password storage
-app.post('/register', async (req, res) => {
-    // hash the password
-    const hash = await bcrypt.hash(req.body.password, 10);
-    const username = req.body.username;
-
-    // check if the username is valid (not too long, no special characters)
-    if (!username || username.length > 20 || /[!@#$%^&*()\/<>,.\{\[\}\]\|\\]/.test(username)) {
-        return res.status(400).render("pages/register", { error: true, message: "Username can not have special characters or be more than 20 characters long." });
-    }
-    
-    const insert_query = "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;";
-    
-    // insert the user into the database
-    db.any(insert_query, [req.body.username, hash])
-        .then(function (data) {
-            res.status(200).redirect("/login");
-        })
-        .catch(function (err) {
-            console.log(err);
-            res.status(400).redirect("/register");
-        })
-});
-
-
-// post endpoint for the login page, processes username and password verification
-app.post('/login', async (req, res) => {
-    const find_user = "SELECT * FROM users WHERE username = $1;";
-
-    // try to find the user
-    db.any(find_user, [req.body.username])
-        .then(async function (data) {
-            var user = data[0];
-
-            // check if user exists at all before we check the password
-            // redirects to register
-            if (!user) {
-                return res.status(400).render("pages/register", { error: true, message: "User does not exist." });
-            }
-
-            // check if the password is correct
-            const match = await bcrypt.compare(req.body.password, user.password);
-
-            // if the password is incorrect, return an error and redirect to the login page
-            if (!match) {
-                return res.status(400).render("pages/login", { error: true, message: "Incorrect password"});
-            }
-            // if the password is correct, set the session user and redirect to the home page
-            else {
-                req.session.user = user;
-                req.session.save();
-                res.status(200).redirect("/home");
-            }
-        })
-        .catch(function (err) {
-            console.log(err);
-            res.status(400).render("pages/register", { error: true, message: "User does not exist.", });
-        })
-});
-
-const auth = (req, res, next) => {
-    if (!req.session.user) {
-      // Default to login page.
-      return res.redirect('/login');
-    }
-    next();
-};
-
-// authentication required
-app.use(auth);
-
-app.get('/home', (req, res) => {
-    res.render('pages/home');
-});
-*/
